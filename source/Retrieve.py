@@ -13,7 +13,7 @@ def calculate_distance(case1, case2, attr_dict):
     distance = 0
 
     for attr, value in case1.items():
-        if case2.get(attr):
+        if case2.get(attr) != None:
             if case2[attr] == value:  # for qualitative attributes
                 distance += 0
             elif attr_dict.get(attr) and attr_dict.get(attr)["type"] == "range": # for quantitative attributes
@@ -23,7 +23,7 @@ def calculate_distance(case1, case2, attr_dict):
 
                 distance += (value1 - value2) ** 2
             elif attr_dict.get(attr) and attr_dict.get(attr)["type"] == "fixed": # for fixed values, such as number of stars in hotel
-                if attr_dict[attr]["val"].get(value):
+                if attr_dict[attr]["val"].get(case2[attr]):
                     minimum = min(attr_dict[attr]["val"].values())
                     maximum = max(attr_dict[attr]["val"].values())
                     value1 = (attr_dict[attr]["val"][value] - minimum) / (maximum - minimum)
@@ -69,7 +69,7 @@ def retrieve(case_base, new_case, data_folder):
 
     # Check if the new case has a value larger or smaller than those in the attribute  file, if so update the file
     for attr in new_case.index:
-        if attr_dict.get(attr) and attr_dict.get(attr)["type"] == "range":
+        if new_case[attr] and attr_dict.get(attr) and attr_dict.get(attr)["type"] == "range":
             if new_case[attr] < attr_dict[attr]['min']:
                 attr_dict[attr]['min'] = new_case[attr]
             elif new_case[attr] > attr_dict[attr]['max']:
