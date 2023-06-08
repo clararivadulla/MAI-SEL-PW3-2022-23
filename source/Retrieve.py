@@ -12,7 +12,7 @@ def calculate_distance(case1, case2, attr_dict):
     """
     distance = 0
 
-    for attr, value in case1.iteritems():
+    for attr, value in case1.items():
         if case2.get(attr):
             if case2[attr] == value:  # for qualitative attributes
                 distance += 0

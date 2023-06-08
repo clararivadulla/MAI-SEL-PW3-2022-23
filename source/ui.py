@@ -1,25 +1,32 @@
+from preprocessing import travel_dataset_xls_preprocessing
+from source.Retrieve import retrieve
+import time
 import customtkinter
 import pandas as pd
 import numpy as np
+import os
 
-path = '/Users/clara.rivadulla/Documents/UPC-MAI/SEL-PW3'
-initial_CB = pd.read_csv(f"{path}/data/travel.csv")
 
-holiday_types = initial_CB['holiday-type'].unique()
+root = os.path.dirname(os.getcwd())
+travel_dataset_xls_preprocessing(root)
+data_folder = f"{root}/data"
+CB = pd.read_csv(f"{data_folder}/travel.csv")
+
+holiday_types = CB['holiday-type'].unique()
 holiday_types = np.append(holiday_types, 'Other')
 
-regions = initial_CB['region'].unique()
+regions = CB['region'].unique()
 regions = np.append(regions, 'Other')
 
-transportations = initial_CB['transportation'].unique()
+transportations = CB['transportation'].unique()
 transportations = np.append(transportations, 'Other')
 
-months = initial_CB['season'].unique()
+months = CB['season'].unique()
 
-accomodations = initial_CB['accomodation'].unique()
+accomodations = CB['accomodation'].unique()
 accomodations = np.append(accomodations, 'Other')
 
-hotels = initial_CB['hotel'].unique()
+hotels = CB['hotel'].unique()
 hotels = np.append(hotels, 'Other')
 
 # If a new case is added to the case base,
@@ -38,25 +45,31 @@ def button_callback():
 
     selected_holiday_type = holidaymenu.get()
     if selected_holiday_type == "Other": selected_holiday_type = other_holiday.get()
+    if selected_holiday_type == "": selected_holiday_type = None
     print(f'Holiday Type: {selected_holiday_type}')
 
     selected_price = slider.get()
+    if selected_price == 0: selected_price = None
     print(f'Maximum Price: {selected_price}')
 
     selected_num_pers = num_pers.get()
-    if selected_num_pers == "": selected_num_pers = 2
+    if selected_num_pers == "": selected_num_pers = None
+    else: selected_num_pers = int(selected_num_pers)
     print(f'Number of persons: {selected_num_pers}')
 
     selected_region = regionmenu.get()
     if selected_region == "Other": selected_region = other_region.get()
+    if selected_region == "": selected_region = None
     print(f'Region: {selected_region}')
 
     selected_transportation = transportationmenu.get()
     if selected_transportation == "Other": selected_transportation = other_transportation.get()
+    if selected_transportation == "": selected_transportation = None
     print(f'Transportation: {selected_transportation}')
 
     selected_duration = duration.get()
-    if selected_duration == "": selected_duration = 5
+    if selected_duration == "": selected_duration = None
+    else: selected_duration = int(selected_duration)
     print(f'Duration (in days): {selected_duration}')
 
     selected_month = monthmenu.get()
@@ -64,11 +77,25 @@ def button_callback():
 
     selected_accomodation = accomodationmenu.get()
     if selected_accomodation == "Other": selected_accomodation = other_accomodation.get()
+    if selected_accomodation == "": selected_accomodation = None
     print(f'Accomodation: {selected_accomodation}')
 
     selected_hotel = hotelmenu.get()
     if selected_hotel == "Other": selected_hotel = other_hotel.get()
+    if selected_hotel == "": selected_hotel = None
     print(f'Hotel: {selected_hotel}')
+    print()
+
+    new_case = pd.Series([selected_holiday_type, selected_price, selected_num_pers, selected_region, selected_transportation, selected_duration, selected_month, selected_accomodation, selected_hotel],
+                         index=["holiday-type", "price", "num-persons", "region", "transportation", "duration",
+                                "season", "accomodation", "hotel"])
+
+    start_time = time.time()
+    most_similar_case, distance = retrieve(CB, new_case, data_folder)
+    end_time = time.time()
+
+    print(f"Most similar case found in {end_time - start_time} seconds with {distance} of distance:")
+    print(CB.loc[most_similar_case])
     print()
     # TODO: Perform a search and show a possible trip
     return None
