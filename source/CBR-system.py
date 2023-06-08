@@ -1,12 +1,15 @@
 import math
-
+import os
 import numpy as np
 import pandas as pd
 from preprocessing import travel_dataset_xls_preprocessing
+import time
+from math import sin, cos, pi
 
-path = '/Users/clararivadulla/Repositories/SEL-PW3'
-travel_dataset_xls_preprocessing(path)
-S = pd.read_csv(f"{path}/data/travel.csv").to_numpy()
+root = '/Users/clararivadulla/Repositories/SEL-PW3'
+root = os.path.dirname(os.getcwd())
+travel_dataset_xls_preprocessing(root)
+S = pd.read_csv(f"{root}/data/travel.csv")
 
 def search(S, y):
 
@@ -41,8 +44,8 @@ def euclidean_distance(S_i, y, weights):
         distance += (weight ** 2) * (atr_dist ** 2)
     return math.sqrt(distance / np.sum(weights**2))
 
-row = S[0]
-row2 = S[1]
-print(row)
-print(row2)
-print(search(S, row))
+
+
+
+
+
