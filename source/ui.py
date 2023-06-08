@@ -24,7 +24,6 @@ transportations = np.append(transportations, 'Other')
 months = CB['season'].unique()
 
 accomodations = CB['accomodation'].unique()
-accomodations = np.append(accomodations, 'Other')
 
 hotels = CB['hotel'].unique()
 hotels = np.append(hotels, 'Other')
@@ -76,8 +75,6 @@ def button_callback():
     print(f'Month: {selected_month}')
 
     selected_accomodation = accomodationmenu.get()
-    if selected_accomodation == "Other": selected_accomodation = other_accomodation.get()
-    if selected_accomodation == "": selected_accomodation = None
     print(f'Accomodation: {selected_accomodation}')
 
     selected_hotel = hotelmenu.get()
@@ -97,7 +94,6 @@ def button_callback():
     print(f"Most similar case found in {end_time - start_time} seconds with {distance} of distance:")
     print(CB.loc[most_similar_case])
     print()
-    # TODO: Perform a search and show a possible trip
     return None
 
 def slider_event(value):
@@ -122,12 +118,6 @@ def transportationmenu_callback(choice):
         other_transportation.grid(row=4, column=2, padx=0, pady=5)
     else:
         other_transportation.grid_forget()
-
-def accomodationmenu_callback(choice):
-    if choice == 'Other':
-        other_accomodation.grid(row=7, column=2, padx=0, pady=5)
-    else:
-        other_accomodation.grid_forget()
 
 def hotelmenu_callback(choice):
     if choice == 'Other':
@@ -191,10 +181,8 @@ month_region = customtkinter.CTkEntry(app, placeholder_text="")
 # ACCOMODATION
 accomodation_label = customtkinter.CTkLabel(app, text="Accomodation:", fg_color="transparent")
 accomodation_label.grid(row=7, column=0, padx=10, pady=5)
-accomodationmenu = customtkinter.CTkOptionMenu(app, values=accomodations,
-                                         command=accomodationmenu_callback)
+accomodationmenu = customtkinter.CTkOptionMenu(app, values=accomodations)
 accomodationmenu.grid(row=7, column=1, padx=0, pady=5)
-other_accomodation = customtkinter.CTkEntry(app, placeholder_text="")
 
 # HOTEL
 hotel_label = customtkinter.CTkLabel(app, text="Hotel:", fg_color="transparent")
