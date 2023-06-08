@@ -47,7 +47,7 @@ def calculate_distance(case1, case2, attr_dict):
     return np.sqrt(distance)
 
 
-def retrieve(case_base, new_case, attr_dict_filename='attr_info.json'):
+def retrieve(case_base, new_case, data_folder):
     """
     Retrieves the most similar case to new_case from case_base.
 
@@ -59,11 +59,12 @@ def retrieve(case_base, new_case, attr_dict_filename='attr_info.json'):
     - The index of the most similar case to new_case from case_base.
     - The calculated distance between the cases
     """
+    file_name = data_folder + "/attr_info.json"
     # Check if the min_max file exists, if not create one
-    if not os.path.exists(attr_dict_filename):
+    if not os.path.exists(file_name):
         print("File json file doesn't exist")
     else:
-        with open(attr_dict_filename, 'r') as f:
+        with open(file_name, 'r') as f:
             attr_dict = json.load(f)
 
     # Check if the new case has a value larger or smaller than those in the attribute  file, if so update the file
@@ -74,7 +75,7 @@ def retrieve(case_base, new_case, attr_dict_filename='attr_info.json'):
             elif new_case[attr] > attr_dict[attr]['max']:
                 attr_dict[attr]['max'] = new_case[attr]
 
-    with open(attr_dict_filename, 'w') as f:
+    with open(file_name, 'w') as f:
         json.dump(attr_dict, f)
 
     # Calculate the distance between the new case and all cases in the case base
