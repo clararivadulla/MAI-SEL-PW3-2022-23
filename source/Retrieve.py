@@ -80,9 +80,10 @@ def retrieve(case_base, new_case, data_folder):
 
     # Calculate the distance between the new case and all cases in the case base
     distances = case_base.apply(calculate_distance, axis=1, case2=new_case, attr_dict=attr_dict)
+    distances.sort_values(inplace = True)
 
     # Get the index of the most similar case
-    most_similar_case_index = distances.idxmin()
+    most_similar_cases_index = distances.index[0:3]
 
     # Return the most similar case
-    return most_similar_case_index, distances.min()
+    return most_similar_cases_index, distances[distances.index[0:3]]

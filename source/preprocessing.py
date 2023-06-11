@@ -16,8 +16,10 @@ def travel_dataset_xls_preprocessing(path):
             if isinstance(value, str) and (value.endswith(',') or value.endswith('.')):
                 value = value[:-1]
             case.append(value)
+        
         if row[1] == 'Hotel:':
-            cases.append(case)
+            if case[7] != 'HolidayFlat':
+                cases.append(case)
 
     df = pd.DataFrame(cases)
     df.columns = ['holiday-type', 'price', 'num-persons', 'region', 'transportation', 'duration', 'season',
