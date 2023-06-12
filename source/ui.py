@@ -1,5 +1,6 @@
 from preprocessing import travel_dataset_xls_preprocessing
-from source.Retrieve import retrieve
+from Retrieve import retrieve
+from Adaptation import weighted_adaptation
 import time
 import customtkinter
 import pandas as pd
@@ -7,7 +8,7 @@ import numpy as np
 import os
 
 
-root = os.path.dirname(os.getcwd())
+root = os.getcwd()
 travel_dataset_xls_preprocessing(root)
 data_folder = f"{root}/data"
 CB = pd.read_csv(f"{data_folder}/travel.csv")
@@ -88,12 +89,58 @@ def button_callback():
                                 "season", "accomodation", "hotel"])
 
     start_time = time.time()
-    most_similar_case, distance = retrieve(CB, new_case, data_folder)
+    most_similar_cases, distances = retrieve(CB, new_case, data_folder, (len(CB.index)/10))
     end_time = time.time()
 
-    print(f"Most similar case found in {end_time - start_time} seconds with {distance} of distance:")
-    print(CB.loc[most_similar_case])
+    print(f"Most similar case found in {end_time - start_time} seconds with {distances[0]} of distance:")
+    suggested_case = weighted_adaptation(new_case, CB.loc[most_similar_cases])
+    print(suggested_case)
     print()
+
+
+    toplevel = customtkinter.CTkToplevel(app)
+    toplevel.title("Travel Planner - Suggestion")
+    toplevel.geometry("510x405")
+    toplevel.attributes('-topmost', 'true')
+
+    customtkinter.CTkLabel(toplevel, text=f"Holiday type:", fg_color="transparent").grid(row=0, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['holiday-type']}", fg_color="transparent").grid(row=0, column=1, padx=10, pady=5)
+    
+    customtkinter.CTkLabel(toplevel, text=f"price:", fg_color="transparent").grid(row=1, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{str(suggested_case['price'])}", fg_color="transparent").grid(row=1, column=1, padx=10, pady=5)
+    
+    customtkinter.CTkLabel(toplevel, text=f"num-persons:", fg_color="transparent").grid(row=2, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{str(suggested_case['num-persons'])}", fg_color="transparent").grid(row=2, column=1, padx=10, pady=5)
+    
+    customtkinter.CTkLabel(toplevel, text=f"region:", fg_color="transparent").grid(row=3, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['region']}", fg_color="transparent").grid(row=3, column=1, padx=10, pady=5)
+    
+    customtkinter.CTkLabel(toplevel, text=f"transportation:", fg_color="transparent").grid(row=4, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['transportation']}", fg_color="transparent").grid(row=4, column=1, padx=10, pady=5)
+    
+    customtkinter.CTkLabel(toplevel, text=f"duration:", fg_color="transparent").grid(row=5, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{str(suggested_case['duration'])}", fg_color="transparent").grid(row=5, column=1, padx=10, pady=5)
+    
+    customtkinter.CTkLabel(toplevel, text=f"season:", fg_color="transparent").grid(row=6, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['season']}", fg_color="transparent").grid(row=6, column=1, padx=10, pady=5)
+    
+    customtkinter.CTkLabel(toplevel, text=f"accomodation:", fg_color="transparent").grid(row=7, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['accomodation']}", fg_color="transparent").grid(row=7, column=1, padx=10, pady=5)
+
+    customtkinter.CTkLabel(toplevel, text=f"hotel:", fg_color="transparent").grid(row=8, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['hotel']}", fg_color="transparent").grid(row=8, column=1, padx=10, pady=5)
+    
+    customtkinter.CTkButton(toplevel, text="Accept", command=btn_accept_callback).grid(row=9, column=0, padx=10, pady=15)
+    customtkinter.CTkButton(toplevel, text="Reject", command=btn_reject_callback).grid(row=9, column=1, padx=10, pady=15)
+
+    return None
+
+def btn_accept_callback():
+    print("TODO. According to documentation, store new case (Retain)")
+    return None
+
+def btn_reject_callback():
+    print("TODO. Suggestion: show a second suggestion")
     return None
 
 def slider_event(value):
@@ -190,6 +237,7 @@ hotel_label.grid(row=8, column=0, padx=10, pady=5)
 hotelmenu = customtkinter.CTkOptionMenu(app, values=hotels,
                                          command=hotelmenu_callback)
 hotelmenu.grid(row=8, column=1, padx=0, pady=5)
+hotelmenu.set(None)
 other_hotel = customtkinter.CTkEntry(app, placeholder_text="")
 
 button = customtkinter.CTkButton(app, text="Find me a trip", command=button_callback)

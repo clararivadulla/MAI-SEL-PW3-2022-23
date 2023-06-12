@@ -43,11 +43,10 @@ def calculate_distance(case1, case2, attr_dict):
                 distance += normalized ** 2
             else:
                 distance += 1
-
+    
     return np.sqrt(distance)
 
-
-def retrieve(case_base, new_case, data_folder):
+def retrieve(case_base, new_case, data_folder, cases_to_retrive=1):
     """
     Retrieves the most similar case to new_case from case_base.
 
@@ -80,9 +79,10 @@ def retrieve(case_base, new_case, data_folder):
 
     # Calculate the distance between the new case and all cases in the case base
     distances = case_base.apply(calculate_distance, axis=1, case2=new_case, attr_dict=attr_dict)
+    distances.sort_values(inplace = True)
 
     # Get the index of the most similar case
-    most_similar_case_index = distances.idxmin()
+    most_similar_case_indexes = distances.index[0:int(cases_to_retrive)]
 
     # Return the most similar case
-    return most_similar_case_index, distances.min()
+    return most_similar_case_indexes, distances[distances.index[0:int(cases_to_retrive)]]
