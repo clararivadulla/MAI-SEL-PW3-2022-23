@@ -207,9 +207,8 @@ def show_error_message(msg, master):
 
 def add_new_case(new_case):
     global CB
-    print(CB.shape)
     CB = pd.concat([CB, new_case.to_frame().T], ignore_index=True)
-    print(CB.shape)
+    print("New case added successfully")
     return None
 
 def btn_add_case_callback():
