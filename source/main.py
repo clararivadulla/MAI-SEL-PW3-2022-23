@@ -29,7 +29,7 @@ print("------ Most similar case ------")
 print(CB.loc[most_similar_cases[0]])
 print("----- Null adapted case -----")
 print(null_adapted_case)
-print("----- Weight adapted case -----")z
+print("----- Weight adapted case -----")
 print(weighted_adaptation_case)
 print("------ ----------------- ------")
 print("Time taken:", end_time - start_time, "seconds")
