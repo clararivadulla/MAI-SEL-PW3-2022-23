@@ -11,7 +11,8 @@ import os
 import time
 
 
-root = os.getcwd()
+#root = os.getcwd()
+root = os.path.dirname(os.getcwd())
 travel_dataset_xls_preprocessing(root)
 data_folder = f"{root}/data"
 CB = pd.read_csv(f"{data_folder}/travel.csv")
@@ -129,7 +130,7 @@ def button_callback():
     most_similar_cases, distances = retrieve(CB, new_case, data_folder, (len(CB.index)/10))
     end_time = time.time()
 
-    print(f"Most similar case found in {end_time - start_time} seconds with {distances[0]} of distance:")
+    print(f"Most similar case found in {end_time - start_time} seconds with {np.array(distances)[0]} of distance:")
     suggested_case = weighted_adaptation(new_case, CB.loc[most_similar_cases])
     
     print("------ Values given ------")
