@@ -157,7 +157,7 @@ def button_callback():
 
     selected_price = slider.get()
     if selected_price == 0: selected_price = None
-    print(f'Maximum Price: {selected_price}')
+    print(f'Price: {selected_price}')
 
     selected_num_pers = num_pers.get()
     if selected_num_pers == "": selected_num_pers = None
@@ -298,7 +298,7 @@ def btn_add_case_callback():
 
     selected_price = slider.get()
     if selected_price == 0: return show_error_message("'Price' is mandatory field", app)
-    print(f'Maximum Price: {selected_price}')
+    print(f'Price: {selected_price}')
 
     selected_num_pers = num_pers.get()
     if selected_num_pers == "": return show_error_message("'Number of persons' is mandatory field", app)
@@ -352,7 +352,7 @@ other_holiday = customtkinter.CTkEntry(app, placeholder_text="")
 # PRICE
 slider = customtkinter.CTkSlider(app, from_=0, to=10000, command=slider_event)
 slider.set(0)
-price_label = customtkinter.CTkLabel(app, text=f"Maximum price:", fg_color="transparent")
+price_label = customtkinter.CTkLabel(app, text=f"Price:", fg_color="transparent")
 price_label.grid(row=1, column=0, padx=10, pady=5)
 slider.grid(row=1, column=1, padx=0, pady=5)
 current_price = customtkinter.CTkLabel(app, text=f"0", fg_color="transparent")
