@@ -18,8 +18,7 @@ def travel_dataset_xls_preprocessing(path):
             case.append(value)
         
         if row[1] == 'Hotel:':
-            if case[7] != 'HolidayFlat':
-                cases.append(case)
+            cases.append(case)
 
     df = pd.DataFrame(cases)
     df.columns = ['holiday-type', 'price', 'num-persons', 'region', 'transportation', 'duration', 'season',
