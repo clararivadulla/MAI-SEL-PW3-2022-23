@@ -1,8 +1,10 @@
 import pandas as pd
+
 def add_new_case(case_base, new_case):
     case_base = pd.concat([case_base, new_case.to_frame().T], ignore_index=True)
     case_base = forgetting(case_base)
     print("New case added successfully!")
+    print(case_base)
 
 
 def forgetting(case_base, threshold=0.5):
@@ -10,7 +12,7 @@ def forgetting(case_base, threshold=0.5):
     When a new case is added, the case base should forget
     the case with lowest utility score.
     """
-    print(case_base)
+    # print(case_base)
     case_base_utilities = case_base.copy()
     total_successes = case_base_utilities['num_acceptance'].sum()
     total_failures = case_base_utilities['num_rejected'].sum()

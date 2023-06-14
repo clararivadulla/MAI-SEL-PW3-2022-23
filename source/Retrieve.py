@@ -88,7 +88,6 @@ def retrieve(case_base, new_case, data_folder, cases_to_retrive=1):
 def get_attr_dict(data_folder):
     
     file_name = data_folder + "/attr_info.json"
-    print(file_name)
     # Check if the min_max file exists, if not create one
     if not os.path.exists(file_name):
         print("File json file doesn't exist")

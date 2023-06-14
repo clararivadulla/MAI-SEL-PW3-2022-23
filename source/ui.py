@@ -11,8 +11,8 @@ import os
 import time
 
 
-#root = os.getcwd()
-root = os.path.dirname(os.getcwd())
+root = os.getcwd()
+# root = os.path.dirname(os.getcwd())
 travel_dataset_xls_preprocessing(root)
 data_folder = f"{root}/data"
 CB = pd.read_csv(f"{data_folder}/travel.csv")
@@ -39,7 +39,7 @@ app.title("Travel Planner")
 app.geometry("510x405")
 
 
-def show_suggested_case_for_evaluation(suggested_case, app):
+def show_suggested_case_for_evaluation(suggested_case, most_similar_cases, CB, app):
     toplevel = customtkinter.CTkToplevel(app)
     toplevel.title("Travel Planner - Suggestion (Adapted case)")
     toplevel.geometry("510x405")
@@ -98,12 +98,13 @@ def show_suggested_case_for_evaluation(suggested_case, app):
                                                                                                      padx=10, pady=5)
 
     customtkinter.CTkButton(toplevel, text="Accept",
-                            command=lambda: btn_accept_callback(suggested_case, toplevel)).grid(row=9, column=0,
+                            command=lambda: btn_accept_callback(suggested_case, most_similar_cases, CB, toplevel)).grid(row=9, column=0,
                                                                                                 padx=10, pady=15)
-    customtkinter.CTkButton(toplevel, text="Reject", command=lambda: btn_reject_callback(toplevel)).grid(row=9,
+    customtkinter.CTkButton(toplevel, text="Reject", command=lambda: btn_reject_callback(most_similar_cases, CB, toplevel)).grid(row=9,
                                                                                                          column=1,
                                                                                                          padx=10,
                                                                                                          pady=15)
+
 def show_most_similar_case_for_evaluation(CB, new_case, most_similar_cases, app):
 
     toplevel = customtkinter.CTkToplevel(app)
@@ -144,6 +145,7 @@ def show_most_similar_case_for_evaluation(CB, new_case, most_similar_cases, app)
     customtkinter.CTkButton(toplevel, text="Accept", command = lambda: btn_accept_similar_callback(idx, toplevel)).grid(row=9, column=0,padx=10, pady=15)
     customtkinter.CTkButton(toplevel, text="Reject", command= lambda: btn_reject_similar_callback(idx, CB, new_case, most_similar_cases, toplevel, app)).grid(row=9, column=1, padx=10, pady=15)
     return None
+
 def button_callback():
 
     print('Searching for a trip that matches your preferences...')
@@ -193,38 +195,51 @@ def button_callback():
                          index=["holiday-type", "price", "num-persons", "region", "transportation", "duration","season", "accomodation", "hotel", "num_acceptance", "num_rejected"])
 
     start_time = time.time()
-    most_similar_cases, distances = retrieve(CB, new_case, data_folder, (len(CB.index)/10))
+    most_similar_cases, distances = retrieve(CB, new_case, data_folder, 7)
+    suggested_case = weighted_adaptation(new_case, CB.loc[most_similar_cases])
     end_time = time.time()
-    print(f"Most similar case found in {end_time - start_time} seconds with {np.array(distances)[0]} of distance:")
-    show_most_similar_case_for_evaluation(CB, new_case, most_similar_cases, app)
+    # print(f"Most similar case found in {end_time - start_time} seconds with {np.array(distances)[0]} of distance:")
+    # show_most_similar_case_for_evaluation(CB, new_case, most_similar_cases, app)
+
+    show_suggested_case_for_evaluation(suggested_case, most_similar_cases, CB, app)
     return None
 
 
 def btn_accept_similar_callback(index, master):
+    # Increase the number of the times the cases used for generate the adaptation are accepted
     CB.loc[index, 'num_acceptance'] += 1
+    # Close the popup
     master.destroy()
     master.update()
     return None
 
 def btn_reject_similar_callback(index, CB, new_case, most_similar_cases, toplevel, app):
+    # Increase the number of the times the cases used for generate the adaptation are rejected
     CB.loc[index, 'num_rejected'] += 1
+    # Close the popup
     toplevel.destroy()
     toplevel.update()
+    # Show an adapted case to the user to be validated
     suggested_case = weighted_adaptation(new_case, CB.loc[most_similar_cases])
-    show_suggested_case_for_evaluation(suggested_case, app)
+    show_suggested_case_for_evaluation(suggested_case, most_similar_cases, CB, app)
     return None
 
-def btn_accept_callback(new_case, master):
-    
+def btn_accept_callback(new_case, most_similar_cases, CB, master):
+    # Increase the number of the times the cases used for generate the adaptation are accepted
+    CB.loc[most_similar_cases, 'num_acceptance'] += 1
+    # A new case is added
     add_new_case(CB, new_case)
+    # Feedback to the user
     show_success_message("New case added", master)
-
+    # Close the popup
     master.destroy()
     master.update()
     return None
 
-
-def btn_reject_callback(master):
+def btn_reject_callback(most_similar_cases, CB, master):
+    # Increase the number of the times the cases used for generate the adaptation are rejected
+    CB.loc[most_similar_cases, 'num_rejected'] += 1
+    # Close the popup
     master.destroy()
     master.update()
     return None
