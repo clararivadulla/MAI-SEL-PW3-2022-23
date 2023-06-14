@@ -19,8 +19,8 @@ def null_adaptation(new_case, most_similar_case):
 def weighted_adaptation(new_case, most_similar_cases):
     # Get back the attributes description
     attr_dict = '\{\}'
-    file_name = os.path.dirname(os.getcwd()) + "/data/attr_info.json"
-    print(file_name)
+    # file_name = os.path.dirname(os.getcwd()) + "/data/attr_info.json"
+    file_name = os.getcwd() + "/data/attr_info.json"
     # Check if the min_max file exists, if not create one
     if not os.path.exists(file_name):
         print("File json file doesn't exist")

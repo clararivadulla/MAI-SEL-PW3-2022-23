@@ -16,24 +16,26 @@ data_folder = f"{root}/data"
 CB = pd.read_csv(f"{data_folder}/travel.csv")
 train, test = train_test_split(CB, test_size=0.2, random_state=0, shuffle=True)
 
-print(train)
-print(test)
-
-labels = ["price", "num-persons", "region", "transportation", "duration", "season", "accomodation"]
-test_distances = []
+labels_full = ["holiday-type", "price", "num-persons", "region", "transportation", "duration", "season", "accomodation", "hotel"]
+labels_test = ["num-persons", "region", "transportation", "duration", "season", "accomodation"]
+test_distances_ms = [] # Most similar
+test_distances_wa = [] # Weighted adaptation
 for index, row in test.iterrows():
     # New case from test set
-    new_case = pd.Series([row[lb] for lb in labels], index=labels)
+    new_case = pd.Series([row[lb] for lb in labels_test], index=labels_test)
+    original_case = pd.Series([row[lb] for lb in labels_full], index=labels_full)
     # Retrieve the most similar case
     start_time = time.time()
-    most_similar_cases, distances = retrieve(train, new_case, data_folder, (len(train.index)/10))
-    #print(new_case)
-
+    
+    most_similar_cases, distances = retrieve(train, new_case, data_folder, 7)
     suggested_case = weighted_adaptation(new_case, train.loc[most_similar_cases])
-    #print(suggested_case)
-    distances = Retrieve.calculate_distance(new_case, suggested_case, Retrieve.get_attr_dict(data_folder))
 
-    print(distances)
+    # print("-----")
+    # print(original_case)
+    # print(suggested_case)
+
+    distances_wa = Retrieve.calculate_distance(original_case, suggested_case, Retrieve.get_attr_dict(data_folder))
+    distances_ms = Retrieve.calculate_distance(original_case, train.loc[most_similar_cases[0]], Retrieve.get_attr_dict(data_folder))
 
     #null_adapted_case = null_adaptation(new_case, train.loc[most_similar_cases[0]])
     #weighted_adaptation_case = weighted_adaptation(new_case, train.loc[most_similar_cases])
@@ -48,7 +50,11 @@ for index, row in test.iterrows():
     #print("------ ----------------- ------")
     #print("Time taken:", end_time - start_time, "seconds")
     #print("distance:", distances.iloc[0])
-    test_distances.append(distances/3)
+    test_distances_wa.append(distances_wa/3)
+    test_distances_ms.append(distances_ms/3)
     #break
 
-print(test_distances)
+print("----- Weight adapted case distances -----")
+print(test_distances_wa)
+print("----- Most similar case distances -----")
+print(test_distances_ms)

@@ -60,13 +60,7 @@ def retrieve(case_base, new_case, data_folder, cases_to_retrive=1):
     - The index of the most similar case to new_case from case_base.
     - The calculated distance between the cases
     """
-    file_name = data_folder + "/attr_info.json"
-    # Check if the min_max file exists, if not create one
-    if not os.path.exists(file_name):
-        print("File json file doesn't exist")
-    else:
-        with open(file_name, 'r') as f:
-            attr_dict = json.load(f)
+    attr_dict = get_attr_dict(data_folder)
 
     # Check if the new case has a value larger or smaller than those in the attribute  file, if so update the file
     for attr in new_case.index:
@@ -89,3 +83,17 @@ def retrieve(case_base, new_case, data_folder, cases_to_retrive=1):
 
     # Return the most similar case
     return most_similar_case_indexes, distances[distances.index[0:int(cases_to_retrive)]]
+
+
+def get_attr_dict(data_folder):
+    
+    file_name = data_folder + "/attr_info.json"
+    print(file_name)
+    # Check if the min_max file exists, if not create one
+    if not os.path.exists(file_name):
+        print("File json file doesn't exist")
+        return None
+    else:
+        with open(file_name, 'r') as f:
+            attr_dict = json.load(f)
+            return attr_dict
