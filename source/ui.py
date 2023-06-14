@@ -1,7 +1,7 @@
 from preprocessing import travel_dataset_xls_preprocessing
 from Retrieve import retrieve
 from Adaptation import weighted_adaptation
-# from Learning import add_new_case
+from Learning import add_new_case
 from IPython.display import display
 import time
 import customtkinter
@@ -11,11 +11,12 @@ import os
 import time
 
 
-root = os.getcwd()
-#root = os.path.dirname(os.getcwd())
+#root = os.getcwd()
+root = os.path.dirname(os.getcwd())
 travel_dataset_xls_preprocessing(root)
 data_folder = f"{root}/data"
 CB = pd.read_csv(f"{data_folder}/travel.csv")
+print(CB)
 
 holiday_types = CB['holiday-type'].unique()
 holiday_types = np.append(holiday_types, 'Other')
@@ -33,20 +34,85 @@ accomodations = CB['accomodation'].unique()
 hotels = CB['hotel'].unique()
 hotels = np.append(hotels, 'Other')
 
-# If a new case is added to the case base,
-# the variables must be updated as well
-def updateCB():
-    return None
-
 app = customtkinter.CTk()
 app.title("Travel Planner")
 app.geometry("510x405")
 
+
 def show_suggested_case_for_evaluation(suggested_case, app):
     toplevel = customtkinter.CTkToplevel(app)
-    toplevel.title("Travel Planner - Suggestion")
+    toplevel.title("Travel Planner - Suggestion (Adapted case)")
     toplevel.geometry("510x405")
     toplevel.attributes('-topmost', 'true')
+
+    customtkinter.CTkLabel(toplevel, text=f"Holiday type:", fg_color="transparent").grid(row=0, column=0, padx=10,
+                                                                                         pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['holiday-type']}", fg_color="transparent").grid(row=0,
+                                                                                                            column=1,
+                                                                                                            padx=10,
+                                                                                                            pady=5)
+
+    customtkinter.CTkLabel(toplevel, text=f"price:", fg_color="transparent").grid(row=1, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['price']:.2f}", fg_color="transparent").grid(row=1,
+                                                                                                         column=1,
+                                                                                                         padx=10,
+                                                                                                         pady=5)
+
+    customtkinter.CTkLabel(toplevel, text=f"num-persons:", fg_color="transparent").grid(row=2, column=0, padx=10,
+                                                                                        pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['num-persons']:.0f}", fg_color="transparent").grid(row=2,
+                                                                                                               column=1,
+                                                                                                               padx=10,
+                                                                                                               pady=5)
+
+    customtkinter.CTkLabel(toplevel, text=f"region:", fg_color="transparent").grid(row=3, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['region']}", fg_color="transparent").grid(row=3, column=1,
+                                                                                                      padx=10, pady=5)
+
+    customtkinter.CTkLabel(toplevel, text=f"transportation:", fg_color="transparent").grid(row=4, column=0, padx=10,
+                                                                                           pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['transportation']}", fg_color="transparent").grid(row=4,
+                                                                                                              column=1,
+                                                                                                              padx=10,
+                                                                                                              pady=5)
+
+    customtkinter.CTkLabel(toplevel, text=f"duration:", fg_color="transparent").grid(row=5, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['duration']:.0f}", fg_color="transparent").grid(row=5,
+                                                                                                            column=1,
+                                                                                                            padx=10,
+                                                                                                            pady=5)
+
+    customtkinter.CTkLabel(toplevel, text=f"season:", fg_color="transparent").grid(row=6, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['season']}", fg_color="transparent").grid(row=6, column=1,
+                                                                                                      padx=10, pady=5)
+
+    customtkinter.CTkLabel(toplevel, text=f"accomodation:", fg_color="transparent").grid(row=7, column=0, padx=10,
+                                                                                         pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['accomodation']}", fg_color="transparent").grid(row=7,
+                                                                                                            column=1,
+                                                                                                            padx=10,
+                                                                                                            pady=5)
+
+    customtkinter.CTkLabel(toplevel, text=f"hotel:", fg_color="transparent").grid(row=8, column=0, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['hotel']}", fg_color="transparent").grid(row=8, column=1,
+                                                                                                     padx=10, pady=5)
+
+    customtkinter.CTkButton(toplevel, text="Accept",
+                            command=lambda: btn_accept_callback(suggested_case, toplevel)).grid(row=9, column=0,
+                                                                                                padx=10, pady=15)
+    customtkinter.CTkButton(toplevel, text="Reject", command=lambda: btn_reject_callback(toplevel)).grid(row=9,
+                                                                                                         column=1,
+                                                                                                         padx=10,
+                                                                                                         pady=15)
+def show_most_similar_case_for_evaluation(CB, new_case, most_similar_cases, app):
+
+    toplevel = customtkinter.CTkToplevel(app)
+    toplevel.title("Travel Planner - Suggestion (Most similar case)")
+    toplevel.geometry("510x405")
+    toplevel.attributes('-topmost', 'true')
+
+    idx = most_similar_cases[0]
+    suggested_case = CB.loc[idx]
 
     customtkinter.CTkLabel(toplevel, text=f"Holiday type:", fg_color="transparent").grid(row=0, column=0, padx=10, pady=5)
     customtkinter.CTkLabel(toplevel, text=f"{suggested_case['holiday-type']}", fg_color="transparent").grid(row=0, column=1, padx=10, pady=5)
@@ -74,10 +140,10 @@ def show_suggested_case_for_evaluation(suggested_case, app):
 
     customtkinter.CTkLabel(toplevel, text=f"hotel:", fg_color="transparent").grid(row=8, column=0, padx=10, pady=5)
     customtkinter.CTkLabel(toplevel, text=f"{suggested_case['hotel']}", fg_color="transparent").grid(row=8, column=1, padx=10, pady=5)
-    
-    customtkinter.CTkButton(toplevel, text="Accept", command= lambda: btn_accept_callback(suggested_case, toplevel)).grid(row=9, column=0, padx=10, pady=15)
-    customtkinter.CTkButton(toplevel, text="Reject", command= lambda: btn_reject_callback(toplevel)).grid(row=9, column=1, padx=10, pady=15)
 
+    customtkinter.CTkButton(toplevel, text="Accept", command = lambda: btn_accept_similar_callback(idx, toplevel)).grid(row=9, column=0,padx=10, pady=15)
+    customtkinter.CTkButton(toplevel, text="Reject", command= lambda: btn_reject_similar_callback(idx, CB, new_case, most_similar_cases, toplevel, app)).grid(row=9, column=1, padx=10, pady=15)
+    return None
 def button_callback():
 
     print('Searching for a trip that matches your preferences...')
@@ -123,39 +189,42 @@ def button_callback():
     print(f'Hotel: {selected_hotel}')
     print()
 
-    new_case = pd.Series([selected_holiday_type, selected_price, selected_num_pers, selected_region, selected_transportation, selected_duration, selected_month, selected_accomodation, selected_hotel],
-                         index=["holiday-type", "price", "num-persons", "region", "transportation", "duration","season", "accomodation", "hotel"])
+    new_case = pd.Series([selected_holiday_type, selected_price, selected_num_pers, selected_region, selected_transportation, selected_duration, selected_month, selected_accomodation, selected_hotel, 0, 0],
+                         index=["holiday-type", "price", "num-persons", "region", "transportation", "duration","season", "accomodation", "hotel", "num_acceptance", "num_rejected"])
 
     start_time = time.time()
     most_similar_cases, distances = retrieve(CB, new_case, data_folder, (len(CB.index)/10))
     end_time = time.time()
-
     print(f"Most similar case found in {end_time - start_time} seconds with {np.array(distances)[0]} of distance:")
+    show_most_similar_case_for_evaluation(CB, new_case, most_similar_cases, app)
+    return None
+
+
+def btn_accept_similar_callback(index, master):
+    CB.loc[index, 'num_acceptance'] += 1
+    master.destroy()
+    master.update()
+    return None
+
+def btn_reject_similar_callback(index, CB, new_case, most_similar_cases, toplevel, app):
+    CB.loc[index, 'num_rejected'] += 1
+    toplevel.destroy()
+    toplevel.update()
     suggested_case = weighted_adaptation(new_case, CB.loc[most_similar_cases])
-    
-    print("------ Values given ------")
-    print(new_case)
-    print("----- Weight adapted case -----")
-    print(suggested_case)
-    print("------ ----------------- ------")
-    print()
-
-
     show_suggested_case_for_evaluation(suggested_case, app)
-    
     return None
 
 def btn_accept_callback(new_case, master):
     
-    add_new_case(new_case)    
+    add_new_case(CB, new_case)
     show_success_message("New case added", master)
 
     master.destroy()
     master.update()
     return None
 
+
 def btn_reject_callback(master):
-    print("TODO. Suggestion: show a second suggestion")
     master.destroy()
     master.update()
     return None
@@ -206,12 +275,6 @@ def show_error_message(msg, master):
     time.sleep(5)
     return None
 
-def add_new_case(new_case):
-    global CB
-    CB = pd.concat([CB, new_case.to_frame().T], ignore_index=True)
-    print("New case added successfully")
-    return None
-
 def btn_add_case_callback():
     selected_holiday_type = holidaymenu.get()
     if selected_holiday_type == "Other": selected_holiday_type = other_holiday.get()
@@ -256,10 +319,10 @@ def btn_add_case_callback():
 
     dialog = customtkinter.CTkInputDialog(text="If you are an expert and you are sure about adding a new case type 'Expert':", title="Travel Planner - Add new case")
     if dialog.get_input() == 'Expert':
-        new_case = pd.Series([selected_holiday_type, selected_price, selected_num_pers, selected_region, selected_transportation, selected_duration, selected_month, selected_accomodation, selected_hotel],
+        new_case = pd.Series([selected_holiday_type, selected_price, selected_num_pers, selected_region, selected_transportation, selected_duration, selected_month, selected_accomodation, selected_hotel, 1, 0],
                          index=["holiday-type", "price", "num-persons", "region", "transportation", "duration",
-                                "season", "accomodation", "hotel"])
-        add_new_case(new_case)
+                                "season", "accomodation", "hotel", "num_acceptance", "num_rejected"])
+        add_new_case(CB, new_case)
 
     return None
 

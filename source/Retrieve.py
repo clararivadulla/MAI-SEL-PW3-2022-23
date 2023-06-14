@@ -1,4 +1,3 @@
-
 import os
 import numpy as np
 import pandas as pd
@@ -71,11 +70,12 @@ def retrieve(case_base, new_case, data_folder, cases_to_retrive=1):
 
     # Check if the new case has a value larger or smaller than those in the attribute  file, if so update the file
     for attr in new_case.index:
-        if new_case[attr] and attr_dict.get(attr) and attr_dict.get(attr)["type"] == "range":
-            if new_case[attr] < attr_dict[attr]['min']:
-                attr_dict[attr]['min'] = new_case[attr]
-            elif new_case[attr] > attr_dict[attr]['max']:
-                attr_dict[attr]['max'] = new_case[attr]
+        if attr != 'num_acceptance' and attr != 'num_reject':
+            if new_case[attr] and attr_dict.get(attr) and attr_dict.get(attr)["type"] == "range":
+                if new_case[attr] < attr_dict[attr]['min']:
+                    attr_dict[attr]['min'] = new_case[attr]
+                elif new_case[attr] > attr_dict[attr]['max']:
+                    attr_dict[attr]['max'] = new_case[attr]
 
     #with open(file_name, 'w') as f:
     #    json.dump(attr_dict, f)

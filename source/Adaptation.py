@@ -2,7 +2,7 @@ import json
 import pandas as pd
 import os
 
-indexes=[ "holiday-type", "price", "num-persons", "region", "transportation", "duration", "season", "accomodation", "hotel"]
+indexes=[ "holiday-type", "price", "num-persons", "region", "transportation", "duration", "season", "accomodation", "hotel", "num_acceptance", "num_rejected"]
 
 def null_adaptation(new_case, most_similar_case):    
     adapted_case = []
@@ -19,7 +19,7 @@ def null_adaptation(new_case, most_similar_case):
 def weighted_adaptation(new_case, most_similar_cases):
     # Get back the attributes description
     attr_dict = '\{\}'
-    file_name = os.getcwd() + "/data/attr_info.json"
+    file_name = os.path.dirname(os.getcwd()) + "/data/attr_info.json"
     print(file_name)
     # Check if the min_max file exists, if not create one
     if not os.path.exists(file_name):
@@ -40,12 +40,19 @@ def weighted_adaptation(new_case, most_similar_cases):
             region = new_case['region']
             change_selected_region = False
 
-    
+
     most_similar_cases = most_similar_cases[most_similar_cases['region'] == region]
 
     for index in indexes:
+
         if index == 'region' and change_selected_region:
             adapted_case.append(most_similar_cases[index].value_counts().idxmax())
+
+        elif index == 'num_acceptance':
+            adapted_case.append(1)
+
+        elif index == 'num_reject':
+            adapted_case.append(0)
 
         elif index in new_case and new_case[index] is not None :
             adapted_case.append(new_case[index])
@@ -55,5 +62,4 @@ def weighted_adaptation(new_case, most_similar_cases):
                 adapted_case.append(most_similar_cases[index].mean())
             else:
                 adapted_case.append(most_similar_cases[index].value_counts().idxmax())
-
     return pd.Series(adapted_case, index=indexes)
