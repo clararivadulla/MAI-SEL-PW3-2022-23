@@ -23,7 +23,7 @@ def calculate_distance(case1, case2, attr_dict):
 
                 distance += (value1 - value2) ** 2
             elif attr_dict.get(attr) and attr_dict.get(attr)["type"] == "fixed": # for fixed values, such as number of stars in hotel
-                if attr_dict[attr]["val"].get(case2[attr]):
+                if attr_dict[attr]["val"].get(case2[attr]) and attr_dict[attr]["val"].get(value):
                     minimum = min(attr_dict[attr]["val"].values())
                     maximum = max(attr_dict[attr]["val"].values())
                     value1 = (attr_dict[attr]["val"][value] - minimum) / (maximum - minimum)
@@ -43,8 +43,9 @@ def calculate_distance(case1, case2, attr_dict):
                 distance += normalized ** 2
             else:
                 distance += 1
-    
+
     return np.sqrt(distance)
+
 
 def retrieve(case_base, new_case, data_folder, cases_to_retrive=1):
     """
