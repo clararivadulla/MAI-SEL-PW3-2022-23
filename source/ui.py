@@ -12,6 +12,7 @@ import time
 
 
 root = os.getcwd()
+#root = os.path.dirname(os.getcwd())
 travel_dataset_xls_preprocessing(root)
 data_folder = f"{root}/data"
 CB = pd.read_csv(f"{data_folder}/travel.csv")
@@ -51,10 +52,10 @@ def show_suggested_case_for_evaluation(suggested_case, app):
     customtkinter.CTkLabel(toplevel, text=f"{suggested_case['holiday-type']}", fg_color="transparent").grid(row=0, column=1, padx=10, pady=5)
     
     customtkinter.CTkLabel(toplevel, text=f"price:", fg_color="transparent").grid(row=1, column=0, padx=10, pady=5)
-    customtkinter.CTkLabel(toplevel, text=f"{str(suggested_case['price'])}", fg_color="transparent").grid(row=1, column=1, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['price']:.2f}", fg_color="transparent").grid(row=1, column=1, padx=10, pady=5)
     
     customtkinter.CTkLabel(toplevel, text=f"num-persons:", fg_color="transparent").grid(row=2, column=0, padx=10, pady=5)
-    customtkinter.CTkLabel(toplevel, text=f"{str(suggested_case['num-persons'])}", fg_color="transparent").grid(row=2, column=1, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['num-persons']:.0f}", fg_color="transparent").grid(row=2, column=1, padx=10, pady=5)
     
     customtkinter.CTkLabel(toplevel, text=f"region:", fg_color="transparent").grid(row=3, column=0, padx=10, pady=5)
     customtkinter.CTkLabel(toplevel, text=f"{suggested_case['region']}", fg_color="transparent").grid(row=3, column=1, padx=10, pady=5)
@@ -63,7 +64,7 @@ def show_suggested_case_for_evaluation(suggested_case, app):
     customtkinter.CTkLabel(toplevel, text=f"{suggested_case['transportation']}", fg_color="transparent").grid(row=4, column=1, padx=10, pady=5)
     
     customtkinter.CTkLabel(toplevel, text=f"duration:", fg_color="transparent").grid(row=5, column=0, padx=10, pady=5)
-    customtkinter.CTkLabel(toplevel, text=f"{str(suggested_case['duration'])}", fg_color="transparent").grid(row=5, column=1, padx=10, pady=5)
+    customtkinter.CTkLabel(toplevel, text=f"{suggested_case['duration']:.0f}", fg_color="transparent").grid(row=5, column=1, padx=10, pady=5)
     
     customtkinter.CTkLabel(toplevel, text=f"season:", fg_color="transparent").grid(row=6, column=0, padx=10, pady=5)
     customtkinter.CTkLabel(toplevel, text=f"{suggested_case['season']}", fg_color="transparent").grid(row=6, column=1, padx=10, pady=5)
@@ -129,7 +130,7 @@ def button_callback():
     most_similar_cases, distances = retrieve(CB, new_case, data_folder, (len(CB.index)/10))
     end_time = time.time()
 
-    print(f"Most similar case found in {end_time - start_time} seconds with {distances[0]} of distance:")
+    print(f"Most similar case found in {end_time - start_time} seconds with {np.array(distances)[0]} of distance:")
     suggested_case = weighted_adaptation(new_case, CB.loc[most_similar_cases])
     
     print("------ Values given ------")
