@@ -9,14 +9,18 @@ import pandas as pd
 import numpy as np
 import os
 import time
-
+from tkinter import messagebox
 
 root = os.getcwd()
 # root = os.path.dirname(os.getcwd())
-travel_dataset_xls_preprocessing(root)
 data_folder = f"{root}/data"
-CB = pd.read_csv(f"{data_folder}/travel.csv")
-print(CB)
+
+try:
+    CB = pd.read_csv(f"{data_folder}/travel.csv")
+except (FileNotFoundError, PermissionError):
+    print("Impossible to find CVS case base, reading from XLS.")
+    travel_dataset_xls_preprocessing(root)
+    CB = pd.read_csv(f"{data_folder}/travel.csv")
 
 holiday_types = CB['holiday-type'].unique()
 holiday_types = np.append(holiday_types, 'Other')
@@ -204,7 +208,6 @@ def button_callback():
     show_suggested_case_for_evaluation(suggested_case, most_similar_cases, CB, app)
     return None
 
-
 def btn_accept_similar_callback(index, master):
     # Increase the number of the times the cases used for generate the adaptation are accepted
     CB.loc[index, 'num_acceptance'] += 1
@@ -228,7 +231,7 @@ def btn_accept_callback(new_case, most_similar_cases, CB, master):
     # Increase the number of the times the cases used for generate the adaptation are accepted
     CB.loc[most_similar_cases, 'num_acceptance'] += 1
     # A new case is added
-    add_new_case(CB, new_case)
+    CB = add_new_case(CB, new_case)
     # Feedback to the user
     show_success_message("New case added", master)
     # Close the popup
@@ -337,7 +340,8 @@ def btn_add_case_callback():
         new_case = pd.Series([selected_holiday_type, selected_price, selected_num_pers, selected_region, selected_transportation, selected_duration, selected_month, selected_accomodation, selected_hotel, 1, 0],
                          index=["holiday-type", "price", "num-persons", "region", "transportation", "duration",
                                 "season", "accomodation", "hotel", "num_acceptance", "num_rejected"])
-        add_new_case(CB, new_case)
+        global CB
+        CB = add_new_case(CB, new_case)
 
     return None
 
@@ -414,5 +418,13 @@ button.grid(row=9, column=0, padx=10, pady=15)
 
 button = customtkinter.CTkButton(app, text="Add new case", command=btn_add_case_callback)
 button.grid(row=9, column=1, padx=10, pady=15)
+
+def on_closing():
+    if messagebox.askokcancel("Quit", "Do you want to quit? (The changes in the case base will be stored)"):
+        print(CB)
+        CB.to_csv(f"{data_folder}/travel.csv")
+        app.destroy()
+
+app.protocol("WM_DELETE_WINDOW", on_closing)
 
 app.mainloop()

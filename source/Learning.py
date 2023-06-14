@@ -5,6 +5,7 @@ def add_new_case(case_base, new_case):
     case_base = forgetting(case_base)
     print("New case added successfully!")
     print(case_base)
+    return case_base
 
 
 def forgetting(case_base, threshold=0.5):
