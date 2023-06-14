@@ -20,7 +20,7 @@ new_case = pd.Series([ 2000, 4, "Egypt", "Car", 14.0, "April", "TwoStars"],
                      index=[ "price", "num-persons", "region", "transportation", "duration", "season", "accomodation"])
 # Retrieve the most similar case
 start_time = time.time()
-most_similar_cases, distances = retrieve(CB, new_case, data_folder, (len(CB.index)/10))
+most_similar_cases, distances = retrieve(CB, new_case, data_folder)
 null_adapted_case = null_adaptation(new_case, CB.loc[most_similar_cases[0]])
 weighted_adaptation_case = weighted_adaptation(new_case, CB.loc[most_similar_cases])
 end_time = time.time()

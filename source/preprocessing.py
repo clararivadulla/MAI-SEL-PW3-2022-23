@@ -1,6 +1,6 @@
 import xlrd
 import pandas as pd
-
+import numpy as np
 
 def travel_dataset_xls_preprocessing(path):
     xls_file = xlrd.open_workbook(f"{path}/data/travel.xls")
@@ -18,10 +18,11 @@ def travel_dataset_xls_preprocessing(path):
             case.append(value)
         
         if row[1] == 'Hotel:':
-            if case[7] != 'HolidayFlat':
-                cases.append(case)
+            cases.append(case)
 
     df = pd.DataFrame(cases)
     df.columns = ['holiday-type', 'price', 'num-persons', 'region', 'transportation', 'duration', 'season',
                   'accomodation', 'hotel']
+    df['num_acceptance'] = np.random.randint(1, 100, df.shape[0])
+    df['num_rejected'] = np.random.randint(1, 100, df.shape[0])
     df.to_csv(f'{path}/data/travel.csv', index=False)
