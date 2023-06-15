@@ -7,11 +7,10 @@ def add_new_case(case_base, new_case, data_folder, threshold = 0.3):
         case_base = pd.concat([case_base, new_case.to_frame().T], ignore_index=True)
         print("New case added successfully!")
         case_base = forgetting(case_base)
-        #print(case_base)
     else:
         print("New case too similar to be added")
+    return  case_base
 
-    return case_base
 
 def forgetting(case_base, threshold=0.5):
     """
@@ -23,7 +22,7 @@ def forgetting(case_base, threshold=0.5):
     total_successes = case_base_utilities['num_acceptance'].sum()
     total_failures = case_base_utilities['num_rejected'].sum()
     case_base_utilities['utility'] = ((case_base_utilities['num_acceptance'] / total_successes - case_base_utilities['num_rejected'] / total_failures) + 1) / 2
-    # print(case_base_utilities)
+    print(case_base_utilities)
     case_base_utilities['utility'] = pd.to_numeric(case_base_utilities['utility'])
     index_min = case_base_utilities['utility'].idxmin()
     if case_base_utilities.loc[index_min, 'utility'] < threshold:
