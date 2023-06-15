@@ -13,7 +13,7 @@ def calculate_distance(case1, case2, attr_dict):
     distance = 0
 
     for attr, value in case1.items():
-        if case2.get(attr) != None and (attr_dict.get(attr)==False or (attr_dict.get(attr) and attr_dict.get(attr)["type"] != "meta_data")):
+        if case2.get(attr) != None and (attr_dict.get(attr)==None or (attr_dict.get(attr) and attr_dict.get(attr)["type"] != "meta_data")):
             if case2[attr] == value:  # for qualitative attributes
                 distance += 0
             elif attr_dict.get(attr) and attr_dict.get(attr)["type"] == "range":  # for quantitative attributes
