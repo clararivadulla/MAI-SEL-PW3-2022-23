@@ -1,7 +1,7 @@
 import pandas as pd
 from Retrieve import retrieve
 
-def add_new_case(case_base, new_case, data_folder, threshold = 0.2):
+def add_new_case(case_base, new_case, data_folder, threshold = 0.3):
     distance = retrieve(case_base, new_case, data_folder, 1)[1].values[0]
     if distance > threshold:
         case_base = pd.concat([case_base, new_case.to_frame().T], ignore_index=True)
