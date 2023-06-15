@@ -23,6 +23,8 @@ except (FileNotFoundError, PermissionError):
     travel_dataset_xls_preprocessing(root)
     CB = pd.read_csv(f"{data_folder}/travel.csv")
 
+print(CB)
+
 holiday_types = CB['holiday-type'].unique()
 holiday_types = np.append(holiday_types, 'Other')
 
@@ -400,7 +402,7 @@ def btn_add_case_callback():
             index=["holiday-type", "price", "num-persons", "region", "transportation", "duration",
                    "season", "accomodation", "hotel", "num_acceptance", "num_rejected"])
         global CB
-        CB = add_new_case(CB, new_case)
+        CB = add_new_case(CB, new_case, data_folder, 0)
 
     return None
 
@@ -483,7 +485,7 @@ button.grid(row=9, column=1, padx=10, pady=15)
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit? (The changes in the case base will be stored)"):
         print(CB)
-        CB.to_csv(f"{data_folder}/travel.csv")
+        #CB.to_csv(f"{data_folder}/travel.csv")
         app.destroy()
 
 

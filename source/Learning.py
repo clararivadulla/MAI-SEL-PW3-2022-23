@@ -11,6 +11,8 @@ def add_new_case(case_base, new_case, data_folder, threshold = 0.3):
     else:
         print("New case too similar to be added")
 
+    return case_base
+
 def forgetting(case_base, threshold=0.5):
     """
     When a new case is added, the case base should forget
