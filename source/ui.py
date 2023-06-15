@@ -485,7 +485,7 @@ button.grid(row=9, column=1, padx=10, pady=15)
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit? (The changes in the case base will be stored)"):
         print(CB)
-        #CB.to_csv(f"{data_folder}/travel.csv")
+        CB.to_csv(f"{data_folder}/travel.csv", index=False)
         app.destroy()
 
 
