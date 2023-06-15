@@ -1,11 +1,15 @@
 import pandas as pd
+from Retrieve import retrieve
 
-def add_new_case(case_base, new_case):
-    case_base = pd.concat([case_base, new_case.to_frame().T], ignore_index=True)
-    case_base = forgetting(case_base)
-    print("New case added successfully!")
-    print(case_base)
-    return case_base
+def add_new_case(case_base, new_case, data_folder, threshold = 0.2):
+    distance = retrieve(case_base, new_case, data_folder, 1)[1].values[0]
+    if distance > threshold:
+        case_base = pd.concat([case_base, new_case.to_frame().T], ignore_index=True)
+        print("New case added successfully!")
+        case_base = forgetting(case_base)
+        #print(case_base)
+    else:
+        print("New case too similar to be added")
 
 
 def forgetting(case_base, threshold=0.5):
